@@ -5,7 +5,7 @@ public class BlueCase extends Case{
 
     public BlueCase(){
         super();
-        color = "b";
+        color = "blue";
     }
 
     @Override
@@ -15,7 +15,7 @@ public class BlueCase extends Case{
 
     public void printCase(){
         if (isPresent()) {
-            System.out.print(color + " ");
+            System.out.print("b  ");
         }else{
             System.out.print("  ");
         }

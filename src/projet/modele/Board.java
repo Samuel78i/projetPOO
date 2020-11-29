@@ -21,21 +21,25 @@ public class Board {
         return height;
     }
 
+    public Case[][] getBoard(){
+        return board;
+    }
+
     public void initBoard(){
         Random ran =new Random();
         for(int i = 0; i< height +2; i++){
             for(int j =0; j<width+2; j++){
-                int alea = ran.nextInt(4);
-                if(alea == 1){
+                int random = ran.nextInt(4);
+                if(random == 1){
                     board[i][j] = new GreenCase();
                 }
-                if(alea == 2){
+                if(random == 2){
                     board[i][j] = new BlueCase();
                 }
-                if(alea == 3){
+                if(random == 3){
                     board[i][j] = new RedCase();
                 }
-                if(alea == 0) {
+                if(random == 0) {
                     board[i][j] = new YellowCase();
                 }
             }

@@ -5,7 +5,7 @@ public class GreenCase extends Case{
 
     public GreenCase(){
         super();
-        color = "g";
+        color = "green";
     }
 
     @Override
@@ -15,7 +15,7 @@ public class GreenCase extends Case{
 
     public void printCase() {
         if (isPresent()) {
-            System.out.print(color + " ");
+            System.out.print("g  ");
         }else{
             System.out.print("  ");
         }
