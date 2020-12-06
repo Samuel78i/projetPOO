@@ -20,4 +20,20 @@ public class Controller {
         board.destroy(w, h);
         view.update();
     }
+
+    public void play(){
+        view.launchGame();
+    }
+
+    public void rules(){
+        view.launchRules();
+    }
+
+    public void quit(){
+        view.quit();
+    }
+
+    public void menu(){
+        view.launchMenu();
+    }
 }

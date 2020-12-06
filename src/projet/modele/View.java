@@ -23,10 +23,31 @@ public class View extends JFrame {
         controller = c;
         this.setTitle("GAME");
         this.setSize(b.getWidth()*100, b.getHeight()*100);
-        panel.setLayout(new GridLayout(board.getWidth(), board.getHeight()));
-        initCase();
+        launchMenu();
         this.getContentPane().add(panel);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    public void launchMenu() {
+        panel.removeAll();
+        JButton play = new JButton("Play");
+        JButton rules = new JButton("Rules");
+        JButton quit = new JButton("quit");
+
+        play.addActionListener((event) -> {
+            controller.play();
+        });
+        rules.addActionListener((event) -> {
+            controller.rules();
+        });
+        quit.addActionListener((event) -> {
+            controller.quit();
+        });
+        panel.add(play);
+        panel.add(rules);
+        panel.add(quit);
+        panel.revalidate();
+        this.repaint();
     }
 
     public void createJlabel(String s, int i, int j){
@@ -75,5 +96,31 @@ public class View extends JFrame {
         repaint();
     }
 
+
+    public void launchRules(){
+        panel.removeAll();
+        Icon icon = new ImageIcon("/home/samuel/IdeaProjects/poo/Resources/YellowSquare.jpeg");
+        JLabel jl = new JLabel(icon);
+        JButton back = new JButton("BACK");
+        back.addActionListener((event) -> {
+            controller.menu();
+        });
+        panel.add(jl);
+        panel.add(back);
+        panel.revalidate();
+        this.repaint();
+    }
+
+    public void quit(){
+       this.dispose();
+    }
+
+    public void launchGame() {
+        panel.removeAll();
+        panel.setLayout(new GridLayout(board.getWidth(), board.getHeight()));
+        initCase();
+        panel.revalidate();
+        this.repaint();
+    }
 }
 

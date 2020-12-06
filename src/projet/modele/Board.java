@@ -6,6 +6,7 @@ public class Board {
     private final Case[][] board;
     private final int width;
     private final int height;
+    private int score;
 
     public Board(int width, int height){
         this.width = width;
@@ -67,11 +68,12 @@ public class Board {
             destroyAround(h, w);
         }
         makeThemDrop(1,1);
+        score = score * score * 10;
     }
 
     public void destroyAround(int h, int w){
         board[h][w].erased();
-
+        score++;
         if (board[h-1][w].isPresent() && board[h - 1][w].getColor().equals(board[h][w].getColor())){
             destroyAround(h-1, w);
         }
