@@ -64,12 +64,31 @@ public class Board {
     }
 
     public void destroy(int h, int w){
-        if (board[h][w].isPresent()){
-            destroyAround(h, w);
+        if (board[h][w].isPresent()) {
+            boolean sameColor = false;
+            if (board[h - 1][w].isPresent() && board[h - 1][w].getColor().equals(board[h][w].getColor())) {
+                sameColor = true;
+            }
+            if (board[h][w - 1].isPresent() && board[h][w - 1].getColor().equals(board[h][w].getColor())) {
+                sameColor = true;
+            }
+            if (board[h][w + 1].isPresent() && board[h][w + 1].getColor().equals(board[h][w].getColor())) {
+                sameColor = true;
+            }
+            if (board[h + 1][w].isPresent() && board[h + 1][w].getColor().equals(board[h][w].getColor())) {
+                sameColor = true;
+            }
+            if (sameColor) {
+                destroyAround(h, w);
+            }
         }
         makeThemDrop(1,1);
+        if(needsToSlide()){
+            makeThemSlide(1,1);
+        }
         score = score * score * 10;
     }
+
 
     public void destroyAround(int h, int w){
         board[h][w].erased();
@@ -101,6 +120,35 @@ public class Board {
                     }
                 }
             }
+        }
+    }
+
+    private boolean needsToSlide() {
+        for(int i = 2; i<= width; i++) {
+            if (board[height][i].isPresent() && !board[height][i - 1].isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void makeThemSlide(int x, int y){
+        while(needsToSlide()) {
+            for (int i = 1; i < width; i++) {
+                if (!board[height][i].isPresent()) {
+                    slide(height, i + 1);
+                }
+            }
+        }
+    }
+
+    public void slide(int h, int w) {
+        for (int i = h; i >= 1; i--) {
+            board[i][w - 1] = board[i][w];
+            board[i][w] = new Case(false);
+        }
+        if (w + 1 < width) {
+            slide(height, w + 1);
         }
     }
 

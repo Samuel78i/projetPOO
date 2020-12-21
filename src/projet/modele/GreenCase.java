@@ -17,7 +17,7 @@ public class GreenCase extends Case{
         if (isPresent()) {
             System.out.print("g  ");
         }else{
-            System.out.print("  ");
+            System.out.print("-  ");
         }
     }
 }

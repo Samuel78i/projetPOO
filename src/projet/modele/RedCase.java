@@ -17,7 +17,7 @@ public class RedCase extends Case {
         if (isPresent()) {
             System.out.print("r  ");
         }else{
-            System.out.print("  ");
+            System.out.print("-  ");
         }
     }
 }

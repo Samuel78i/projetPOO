@@ -17,7 +17,7 @@ public class YellowCase extends Case{
         if (isPresent()) {
             System.out.print("y  ");
         }else{
-            System.out.print("  ");
+            System.out.print("-  ");
         }
     }
 }

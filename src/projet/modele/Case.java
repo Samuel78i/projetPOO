@@ -24,6 +24,6 @@ public class Case {
     }
 
     public void printCase() {
-       System.out.print("  ");
+       System.out.print("-  ");
     }
 }

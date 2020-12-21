@@ -17,7 +17,7 @@ public class BlueCase extends Case{
         if (isPresent()) {
             System.out.print("b  ");
         }else{
-            System.out.print("  ");
+            System.out.print("-  ");
         }
     }
 }
