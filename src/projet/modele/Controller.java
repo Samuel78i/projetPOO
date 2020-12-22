@@ -15,6 +15,7 @@ public class Controller {
         view = v;
     }
 
+    public void setBoard(Board b){ board = b;}
 
     public void iconClicked(int w, int h) {
         board.destroy(w, h);
@@ -35,5 +36,9 @@ public class Controller {
 
     public void menu(){
         view.launchMenu();
+    }
+
+    public boolean isTheGameOver() {
+        return board.gameOver();
     }
 }
