@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 public class View extends JFrame {
     private JPanel panel= new JPanel();
-    private Controller controller;
+    private JPanel lvlProgression = new JPanel();
+    private final Controller controller;
     private Board board;
     private String userName;
     private int level;
@@ -23,7 +23,7 @@ public class View extends JFrame {
         board = b;
         controller = c;
         this.setTitle("GAME");
-        this.setSize(b.getWidth()*100, b.getHeight()*100);
+        this.setSize(b.getWidth()*200, b.getHeight()*100);
         launchUserSelection();
         this.getContentPane().add(panel);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,9 +31,8 @@ public class View extends JFrame {
 
     private void launchUserSelection() {
         panel.removeAll();
-
         JButton inputButton = new JButton("Send");
-        JTextArea editTextArea = new JTextArea("Type Here!");
+        JTextField editTextArea = new JTextField("Enter User Name");
 
         editTextArea.setBackground(Color.LIGHT_GRAY);
         editTextArea.setForeground(Color.BLACK);
@@ -72,7 +71,7 @@ public class View extends JFrame {
             reader = new BufferedReader(new FileReader(file));
             while ((line = reader.readLine()) != null) {
                 name = findUserName(line);
-                if (name == userName) {
+                if (name.equals(userName)) {
                     userIsPresent = true;
                     level = findLevel(line);
                 }
@@ -100,35 +99,11 @@ public class View extends JFrame {
     }
 
     public int findLevel(String line) {
-        boolean number = false;
-        String ch = "";
-        int result;
-
-        for(int i = 1; i<line.length(); i++){
-            if(number){
-                ch = line.substring(i-1, i);
-            }
-            if(line.substring(i-1, i) == "|"){
-                 number = true;
-            }
-
-        }
-        result = Integer.parseInt(ch);
-        return result;
+        return Integer.valueOf(line.substring(line.indexOf("|") +1));
     }
 
     public String findUserName(String line) {
-        boolean nameNotFull = true;
-        String result = "";
-        for(int i = 1; i<line.length(); i++){
-            if(line.substring(i-1, i) == "|"){
-                nameNotFull = false;
-            }
-            if(nameNotFull){
-                result = line.substring(i-1, i);
-            }
-        }
-        return result;
+        return line.substring(0, line.indexOf("|"));
     }
 
     public void launchMenu() {
@@ -161,16 +136,13 @@ public class View extends JFrame {
         map.put("green" , "/home/samuel/IdeaProjects/poo/Resources/GreenSquare.png");
         Icon icon = new ImageIcon(map.get(s));
         JLabel jl = new JLabel(icon);
-        int finalI = i;
-        int finalJ = j;
         jl.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                controller.iconClicked(finalI, finalJ);
+                controller.iconClicked(i, j);
             }
         });
         panel.add(jl);
-
     }
 
     public void initCase(){
@@ -185,6 +157,11 @@ public class View extends JFrame {
 
     public void update() {
         panel.removeAll();
+        if(isTheGameWin()){
+            board = new Board(board.getWidth(), board.getHeight());
+            controller.setBoard(board);
+            updateLevel();
+        }
         if(isTheGameOver()){
             board = new Board(board.getWidth(), board.getHeight());
             controller.setBoard(board);
@@ -201,6 +178,37 @@ public class View extends JFrame {
         }
         panel.revalidate();
         repaint();
+    }
+
+    public void updateLevel(){
+        level += 1;
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(new FileReader("/home/samuel/IdeaProjects/poo/Resources/userList.txt"));
+            StringBuffer inputBuffer = new StringBuffer();
+            String line;
+            String name;
+
+            while ((line = file.readLine()) != null) {
+                if(line.length() != 0) {
+                    name = findUserName(line);
+                    if (name.equals(userName)) {
+                        line = makeUserLineForFile();
+                    }
+                }
+                inputBuffer.append(line);
+                inputBuffer.append('\n');
+            }
+            file.close();
+
+            // write the new string with the replaced line OVER the same file
+            FileOutputStream fileOut = new FileOutputStream("/home/samuel/IdeaProjects/poo/Resources/userList.txt");
+            fileOut.write(inputBuffer.toString().getBytes());
+            fileOut.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading file.");
+        }
     }
 
 
@@ -225,12 +233,19 @@ public class View extends JFrame {
     public boolean isTheGameOver(){
         return controller.isTheGameOver();
     }
+    public boolean isTheGameWin(){
+        return controller.isTheGameWin();
+    }
 
     public void launchGame() {
         panel.removeAll();
         panel.setLayout(new GridLayout(board.getWidth(), board.getHeight()));
         initCase();
         panel.revalidate();
+        JLabel j = new JLabel("Vous etes au niveau " + level);
+        lvlProgression.add(j);
+        this.getContentPane().setLayout(new GridLayout(1,0));
+        this.getContentPane().add(lvlProgression);
         this.repaint();
     }
 }

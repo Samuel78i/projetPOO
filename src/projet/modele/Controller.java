@@ -41,4 +41,6 @@ public class Controller {
     public boolean isTheGameOver() {
         return board.gameOver();
     }
+
+    public boolean isTheGameWin() {return board.gameWin(); }
 }
