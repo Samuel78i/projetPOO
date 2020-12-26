@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import static javax.swing.GroupLayout.Alignment.*;
 
 
 public class View extends JFrame {
@@ -17,11 +18,17 @@ public class View extends JFrame {
     private final Controller controller;
     private Board board;
     private String userName;
+    public User u = new User();
     private int level;
+    private int scoreTotal;
+    private int lastTotalScore = 0;
+    private int scoreOfTheGame;
 
     public View(Board b, Controller c){
+        u.setView(this);
         board = b;
         controller = c;
+        controller.setU(u);
         this.setTitle("GAME");
         this.setSize(b.getWidth()*200, b.getHeight()*100);
         launchUserSelection();
@@ -29,23 +36,42 @@ public class View extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
+    public String getUserName(){ return userName;}
+    public void setUserName(String s){ userName = s;}
+    public int getLevel(){ return level;}
+    public void setLevel(int i){ level = i;}
+    public void setBoard(Board b){ board = b;}
+    public void setScoreOfTheGame(int i){ scoreOfTheGame = i;}
+    public void setLastTotalScore(int i){ lastTotalScore = i;}
+    public int getLastTotalScore(){ return lastTotalScore;}
+    public void setScoreTotal(int i){ lastTotalScore = i;}
+    public int getScoreTotal(){ return scoreTotal;};
+
     private void launchUserSelection() {
         panel.removeAll();
         JButton inputButton = new JButton("Send");
         JTextField editTextArea = new JTextField("Enter User Name");
 
-        editTextArea.setBackground(Color.LIGHT_GRAY);
-        editTextArea.setForeground(Color.BLACK);
-        editTextArea.setSize(600,600);
+        editTextArea.setBackground(Color.white);
+        editTextArea.setForeground(Color.black);
+        editTextArea.setBorder(BorderFactory.createLineBorder(new Color(65, 100, 225)));
 
-        FlowLayout layout = new FlowLayout();
-        layout.setVgap(15);
+        GridBagLayout layout = new GridBagLayout();
         panel.setLayout(layout);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        panel.add(editTextArea);
-        panel.add(inputButton);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 100;
+        panel.add(editTextArea, gbc);
 
-        panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 1;
+        panel.add(inputButton, gbc);
+        panel.setSize(500, 500);
 
         final String[] user = {""};
         inputButton.addActionListener(new ActionListener() {
@@ -54,63 +80,17 @@ public class View extends JFrame {
                 user[0] = editTextArea.getText();
                 editTextArea.setText("");
                 userName = user[0];
-                userInFile();
+                u.inFile();
                 launchMenu();
             }
         });
-    }
-
-    public void userInFile() {
-        boolean userIsPresent = false;
-        String file ="/home/samuel/IdeaProjects/poo/Resources/userList.txt";
-        String line;
-        String name;
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            while ((line = reader.readLine()) != null) {
-                name = findUserName(line);
-                if (name.equals(userName)) {
-                    userIsPresent = true;
-                    level = findLevel(line);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        if(!userIsPresent){
-            try {
-                FileWriter myWriter = new FileWriter(file);
-                myWriter.write(makeUserLineForFile());
-                myWriter.close();
-            }catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public String makeUserLineForFile(){
-        return userName + "|" + level + "\n";
-    }
-
-    public int findLevel(String line) {
-        return Integer.valueOf(line.substring(line.indexOf("|") +1));
-    }
-
-    public String findUserName(String line) {
-        return line.substring(0, line.indexOf("|"));
     }
 
     public void launchMenu() {
         panel.removeAll();
         JButton play = new JButton("Play");
         JButton rules = new JButton("Rules");
-        JButton quit = new JButton("quit");
+        JButton quit = new JButton("Quit");
 
         play.addActionListener((event) -> {
             controller.play();
@@ -130,10 +110,10 @@ public class View extends JFrame {
 
     public void createJlabel(String s, int i, int j){
         Map<String, String> map = new HashMap<>();
-        map.put("yellow", "/home/samuel/IdeaProjects/poo/Resources/YellowSquare.jpeg");
-        map.put("blue", "/home/samuel/IdeaProjects/poo/Resources/BlueSquare.png");
-        map.put("red", "/home/samuel/IdeaProjects/poo/Resources/RedSquare.png");
-        map.put("green" , "/home/samuel/IdeaProjects/poo/Resources/GreenSquare.png");
+        map.put("yellow", "./Resources/YellowSquare.jpeg");
+        map.put("blue", "./Resources/BlueSquare.png");
+        map.put("red", "./Resources/RedSquare.png");
+        map.put("green" , "./Resources/GreenSquare.png");
         Icon icon = new ImageIcon(map.get(s));
         JLabel jl = new JLabel(icon);
         jl.addMouseListener(new MouseAdapter() {
@@ -157,64 +137,70 @@ public class View extends JFrame {
 
     public void update() {
         panel.removeAll();
+
         if(isTheGameWin()){
-            board = new Board(board.getWidth(), board.getHeight());
-            controller.setBoard(board);
-            updateLevel();
-        }
-        if(isTheGameOver()){
-            board = new Board(board.getWidth(), board.getHeight());
-            controller.setBoard(board);
-        }
-        for (int i = 1; i<=board.getWidth(); i++){
-            for (int j = 1; j<=board.getHeight(); j++){
-                if(board.getBoard()[i][j].isPresent()) {
-                    createJlabel(board.getBoard()[i][j].getColor(), i, j);
-                }else{
-                    JLabel jl = new JLabel();
-                    panel.add(jl);
-                }
-            }
-        }
-        panel.revalidate();
-        repaint();
-    }
-
-    public void updateLevel(){
-        level += 1;
-        try {
-            // input the (modified) file content to the StringBuffer "input"
-            BufferedReader file = new BufferedReader(new FileReader("/home/samuel/IdeaProjects/poo/Resources/userList.txt"));
-            StringBuffer inputBuffer = new StringBuffer();
-            String line;
-            String name;
-
-            while ((line = file.readLine()) != null) {
-                if(line.length() != 0) {
-                    name = findUserName(line);
-                    if (name.equals(userName)) {
-                        line = makeUserLineForFile();
+            controller.gameWon();
+        }else if(isTheGameOver()){
+            controller.gameLost();
+        }else {
+            for (int i = 1; i <= board.getWidth(); i++) {
+                for (int j = 1; j <= board.getHeight(); j++) {
+                    if (board.getBoard()[i][j].isPresent()) {
+                        createJlabel(board.getBoard()[i][j].getColor(), i, j);
+                    } else {
+                        JLabel jl = new JLabel();
+                        panel.add(jl);
                     }
                 }
-                inputBuffer.append(line);
-                inputBuffer.append('\n');
             }
-            file.close();
-
-            // write the new string with the replaced line OVER the same file
-            FileOutputStream fileOut = new FileOutputStream("/home/samuel/IdeaProjects/poo/Resources/userList.txt");
-            fileOut.write(inputBuffer.toString().getBytes());
-            fileOut.close();
-
-        } catch (Exception e) {
-            System.out.println("Problem reading file.");
+            updateScore();
+            panel.revalidate();
+            repaint();
         }
+    }
+
+    public void displayGameOver() {
+        panel.removeAll();
+
+        JTextArea loose = new JTextArea("PERDU");
+        JButton replay = new JButton("REJOUER");
+        replay.addActionListener((event) -> {
+            controller.play();
+        });
+
+        panel.add(loose);
+        panel.add(replay);
+        panel.revalidate();
+        this.repaint();
+    }
+
+    public void updateScore() {
+        int tmp = board.getScore();
+        scoreTotal += tmp;
+        scoreOfTheGame += tmp;
+
+
+        lvlProgression.removeAll();
+        GroupLayout layout = new GroupLayout(lvlProgression);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        lvlProgression.setLayout(layout);
+
+        JLabel j = new JLabel("Vous etes au niveau " + level);
+        JLabel j1 = new JLabel("Score Actuel " + scoreOfTheGame);
+        JLabel j2 = new JLabel("Score Total " + scoreTotal);
+
+        layout.setHorizontalGroup(layout.createSequentialGroup() .addGroup(layout.createParallelGroup(LEADING).addComponent(j).addComponent(j1).addComponent(j2)));
+        layout.setVerticalGroup(layout.createSequentialGroup().addComponent(j).addComponent(j1).addComponent(j2));
+        lvlProgression.add(j);
+        lvlProgression.add(j1);
+        lvlProgression.add(j2);
     }
 
 
     public void launchRules(){
         panel.removeAll();
-        Icon icon = new ImageIcon("/home/samuel/IdeaProjects/poo/Resources/YellowSquare.jpeg");
+        Icon icon = new ImageIcon("./Resources/YellowSquare.jpeg");
         JLabel jl = new JLabel(icon);
         JButton back = new JButton("BACK");
         back.addActionListener((event) -> {
@@ -242,10 +228,13 @@ public class View extends JFrame {
         panel.setLayout(new GridLayout(board.getWidth(), board.getHeight()));
         initCase();
         panel.revalidate();
-        JLabel j = new JLabel("Vous etes au niveau " + level);
-        lvlProgression.add(j);
+
+        updateScore();
+
         this.getContentPane().setLayout(new GridLayout(1,0));
         this.getContentPane().add(lvlProgression);
+
+
         this.repaint();
     }
 }

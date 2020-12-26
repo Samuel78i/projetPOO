@@ -15,11 +15,26 @@ public class Board {
         initBoard();
     }
 
+    public Board(int w, int h, boolean win){
+        this.width = w;
+        this.height = h;
+        board = new Case[height +2][width+2];
+        if(win) {
+            initWinBoard();
+        }
+    }
+
     public int getWidth(){
         return width;
     }
     public int getHeight(){
         return height;
+    }
+
+    public int getScore() {
+        int tmp = score;
+        score = 0;
+        return tmp;
     }
 
     public Case[][] getBoard(){
@@ -43,6 +58,15 @@ public class Board {
                 if(random == 0) {
                     board[i][j] = new YellowCase();
                 }
+            }
+        }
+        initAroundBoard();
+    }
+
+    public void initWinBoard(){
+        for(int i = 0; i< height +2; i++) {
+            for (int j = 0; j < width + 2; j++) {
+                board[i][j] = new GreenCase();
             }
         }
         initAroundBoard();
@@ -73,7 +97,7 @@ public class Board {
         if(needsToSlide()){
             makeThemSlide(1,1);
         }
-        score = score * score * 10;
+        score = score * 10;
     }
 
 

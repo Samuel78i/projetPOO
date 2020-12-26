@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 public class Controller {
     private Board board;
     private View view;
+    private User u;
 
     public Controller(Board b){
         board = b;
@@ -16,6 +17,8 @@ public class Controller {
     }
 
     public void setBoard(Board b){ board = b;}
+
+    public void setU(User user){ u = user;}
 
     public void iconClicked(int w, int h) {
         board.destroy(w, h);
@@ -43,4 +46,21 @@ public class Controller {
     }
 
     public boolean isTheGameWin() {return board.gameWin(); }
+
+    public void gameWon(){
+        board = new Board(board.getWidth(), board.getHeight());
+        view.setBoard(board);
+        view.setScoreOfTheGame(0);
+        view.setLastTotalScore(view.getScoreTotal());
+        u.updateLevel();
+        view.update();
+    }
+
+    public void gameLost(){
+        board = new Board(board.getWidth(), board.getHeight());
+        view.setBoard(board);
+        view.setScoreTotal(view.getLastTotalScore());
+        view.setScoreOfTheGame(0);
+        view.displayGameOver();
+    }
 }
