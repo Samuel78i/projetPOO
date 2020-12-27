@@ -1,5 +1,7 @@
 package projet.modele;
 
+import java.awt.*;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Board {
@@ -7,11 +9,13 @@ public class Board {
     private final int width;
     private final int height;
     private int score;
+    private boolean win;
 
     public Board(int width, int height){
         this.width = width;
         this.height = height;
         board = new Case[height +2][width+2];
+        win = false;
         initBoard();
     }
 
@@ -19,6 +23,7 @@ public class Board {
         this.width = w;
         this.height = h;
         board = new Case[height +2][width+2];
+        this.win = win;
         if(win) {
             initWinBoard();
         }
@@ -41,6 +46,8 @@ public class Board {
         return board;
     }
 
+    public boolean getWin(){ return win;}
+
     public void initBoard(){
         Random ran =new Random();
         for(int i = 0; i< height +2; i++){
@@ -61,6 +68,31 @@ public class Board {
             }
         }
         initAroundBoard();
+        makeTheBoardMoreWinnable();
+    }
+
+    public void makeTheBoardMoreWinnable(){
+        Random ran = new Random();
+        for(int i = 1; i< height +1; i++) {
+            for (int j = 1; j < width + 1; j++) {
+                if(!aMoveIsPossible(i, j) && !sameColorInDia(i, j)){
+                    LinkedList<String> colorAround = giveMeColorAround(i ,j);
+                    int random = ran.nextInt(colorAround.size());
+                    if(colorAround.get(random).equals("green")){
+                        board[i][j] = new GreenCase();
+                    }
+                    if(colorAround.get(random).equals("red")){
+                        board[i][j] = new RedCase();
+                    }
+                    if(colorAround.get(random).equals("blue")){
+                        board[i][j] = new BlueCase();
+                    }
+                    if(colorAround.get(random).equals("yellow")){
+                        board[i][j] = new YellowCase();
+                    }
+                }
+            }
+        }
     }
 
     public void initWinBoard(){
@@ -201,6 +233,51 @@ public class Board {
             return true;
         }
         return false;
+    }
+
+    public boolean sameColorInDia(int h, int w){
+        if (board[h - 1][w - 1].isPresent() && board[h - 1][w - 1].getColor().equals(board[h][w].getColor())) {
+            return true;
+        }
+        if (board[h - 1][w + 1].isPresent() && board[h - 1][w + 1].getColor().equals(board[h][w].getColor())) {
+            return true;
+        }
+        if (board[h + 1][w + 1].isPresent() && board[h + 1][w + 1].getColor().equals(board[h][w].getColor())) {
+            return true;
+        }
+        if (board[h + 1][w - 1].isPresent() && board[h + 1][w - 1].getColor().equals(board[h][w].getColor())) {
+            return true;
+        }
+        return false;
+    }
+
+    public LinkedList<String> giveMeColorAround(int h, int w){
+        LinkedList<String> result = new LinkedList<String>();
+        if(board[h - 1][w - 1].isPresent()){
+            result.add(board[h - 1][w - 1].getColor());
+        }
+        if(board[h - 1][w].isPresent()){
+            result.add(board[h - 1][w].getColor());
+        }
+        if(board[h - 1][w + 1].isPresent()){
+            result.add(board[h - 1][w + 1].getColor());
+        }
+        if(board[h][w - 1].isPresent()){
+            result.add(board[h][w - 1].getColor());
+        }
+        if(board[h][w + 1].isPresent()){
+            result.add(board[h][w + 1].getColor());
+        }
+        if(board[h + 1][w - 1].isPresent()){
+            result.add(board[h + 1][w - 1].getColor());
+        }
+        if(board[h + 1][w].isPresent()){
+            result.add(board[h + 1][w].getColor());
+        }
+        if(board[h + 1][w + 1].isPresent()){
+            result.add(board[h + 1][w + 1].getColor());
+        }
+        return result;
     }
 
     public boolean gameWin() {

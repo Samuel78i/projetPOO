@@ -30,7 +30,7 @@ public class View extends JFrame {
         controller = c;
         controller.setU(u);
         this.setTitle("GAME");
-        this.setSize(b.getWidth()*200, b.getHeight()*100);
+        this.setSize(b.getWidth()*150, b.getHeight()*75);
         launchUserSelection();
         this.getContentPane().add(panel);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -116,6 +116,7 @@ public class View extends JFrame {
         map.put("green" , "./Resources/GreenSquare.png");
         Icon icon = new ImageIcon(map.get(s));
         JLabel jl = new JLabel(icon);
+        jl.setSize(10, 10);
         jl.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -233,7 +234,6 @@ public class View extends JFrame {
 
         this.getContentPane().setLayout(new GridLayout(1,0));
         this.getContentPane().add(lvlProgression);
-
 
         this.repaint();
     }
