@@ -44,7 +44,7 @@ public class View extends JFrame {
     public void setScoreOfTheGame(int i){ scoreOfTheGame = i;}
     public void setLastTotalScore(int i){ lastTotalScore = i;}
     public int getLastTotalScore(){ return lastTotalScore;}
-    public void setScoreTotal(int i){ lastTotalScore = i;}
+    public void setScoreTotal(int i){ scoreTotal = i;}
     public int getScoreTotal(){ return scoreTotal;};
 
     private void launchUserSelection() {
@@ -114,9 +114,9 @@ public class View extends JFrame {
         map.put("blue", "./Resources/BlueSquare.png");
         map.put("red", "./Resources/RedSquare.png");
         map.put("green" , "./Resources/GreenSquare.png");
+        map.put("wall", "./Resources/WallSquare.jpg");
         Icon icon = new ImageIcon(map.get(s));
         JLabel jl = new JLabel(icon);
-        jl.setSize(10, 10);
         jl.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -166,7 +166,7 @@ public class View extends JFrame {
         JTextArea loose = new JTextArea("PERDU");
         JButton replay = new JButton("REJOUER");
         replay.addActionListener((event) -> {
-            controller.play();
+            update();
         });
 
         panel.add(loose);
@@ -179,7 +179,6 @@ public class View extends JFrame {
         int tmp = board.getScore();
         scoreTotal += tmp;
         scoreOfTheGame += tmp;
-
 
         lvlProgression.removeAll();
         GroupLayout layout = new GroupLayout(lvlProgression);
@@ -230,6 +229,9 @@ public class View extends JFrame {
         initCase();
         panel.revalidate();
 
+        if(scoreTotal>0){
+            lastTotalScore = scoreTotal;
+        }
         updateScore();
 
         this.getContentPane().setLayout(new GridLayout(1,0));

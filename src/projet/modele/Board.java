@@ -1,6 +1,7 @@
 package projet.modele;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -19,12 +20,21 @@ public class Board {
         initBoard();
     }
 
-    public Board(int w, int h, boolean win){
+    public Board(int width, int height, boolean wall){
+        this.width = width;
+        this.height = height;
+        board = new Case[height +2][width+2];
+        win = false;
+        initBoard();
+        putWall();
+    }
+
+    public Board(int w, int h, String win){
         this.width = w;
         this.height = h;
         board = new Case[height +2][width+2];
-        this.win = win;
-        if(win) {
+        if(win.equals("win")){
+            this.win = true;
             initWinBoard();
         }
     }
@@ -95,6 +105,41 @@ public class Board {
         }
     }
 
+    public void putWall(){
+        Random ran = new Random();
+        int random = ran.nextInt(3);
+        if(random == 0){
+            board[2][5] = new WallCase();
+            board[3][5] = new WallCase();
+            board[5][3] = new WallCase();
+            board[5][2] = new WallCase();
+            board[5][7] = new WallCase();
+            board[5][8] = new WallCase();
+            board[7][5] = new WallCase();
+            board[8][5] = new WallCase();
+        }
+        if(random == 1){
+            board[2][3] = new WallCase();
+            board[2][4] = new WallCase();
+            board[2][6] = new WallCase();
+            board[2][7] = new WallCase();
+            board[3][4] = new WallCase();
+            board[3][6] = new WallCase();
+            board[4][4] = new WallCase();
+            board[4][6] = new WallCase();
+            board[5][5] = new WallCase();
+        }
+        if(random == 2){
+            board[4][3] = new WallCase();
+            board[4][4] = new WallCase();
+            board[4][5] = new WallCase();
+            board[4][6] = new WallCase();
+            board[4][7] = new WallCase();
+            board[5][5] = new WallCase();
+            board[6][5] = new WallCase();
+        }
+    }
+
     public void initWinBoard(){
         for(int i = 0; i< height +2; i++) {
             for (int j = 0; j < width + 2; j++) {
@@ -136,16 +181,16 @@ public class Board {
     public void destroyAround(int h, int w){
         board[h][w].erased();
         score++;
-        if (board[h-1][w].isPresent() && board[h - 1][w].getColor().equals(board[h][w].getColor())){
+        if (board[h-1][w].isPresent() && !(board[h-1][w] instanceof WallCase) && board[h - 1][w].getColor().equals(board[h][w].getColor())){
             destroyAround(h-1, w);
         }
-        if (board[h][w-1].isPresent() && board[h][w - 1].getColor().equals(board[h][w].getColor())) {
+        if (board[h][w-1].isPresent() && !(board[h][w - 1] instanceof WallCase) && board[h][w - 1].getColor().equals(board[h][w].getColor())) {
             destroyAround(h, w - 1);
         }
-        if (board[h][w+1].isPresent() && board[h][w + 1].getColor().equals(board[h][w].getColor())){
+        if (board[h][w+1].isPresent() && !(board[h][w+1] instanceof WallCase)&& board[h][w + 1].getColor().equals(board[h][w].getColor())){
             destroyAround(h, w+1);
         }
-        if (board[h+1][w].isPresent() && board[h + 1][w].getColor().equals(board[h][w].getColor())){
+        if (board[h+1][w].isPresent() && !(board[h+1][w] instanceof WallCase) && board[h + 1][w].getColor().equals(board[h][w].getColor())){
             destroyAround(h+1, w);
         }
 
@@ -156,7 +201,7 @@ public class Board {
         for(int i = x; i< height; i++) {
             for (int j = y; j <= width; j++) {
                 if(board[i][j].isPresent()){
-                    if(!board[i+1][j].isPresent()){
+                    if(!board[i+1][j].isPresent() && !(board[i][j] instanceof WallCase)){
                         board[i+1][j]=board[i][j];
                         board[i][j] = new Case(false);
                         makeThemDrop(i-1, j);
@@ -168,7 +213,7 @@ public class Board {
 
     private boolean needsToSlide() {
         for(int i = 2; i<= width; i++) {
-            if (board[height][i].isPresent() && !board[height][i - 1].isPresent()) {
+            if (board[height][i].isPresent() && !board[height][i - 1].isPresent() && !(board[height][i] instanceof WallCase)) {
                 return true;
             }
         }
@@ -178,21 +223,41 @@ public class Board {
     public void makeThemSlide(int x, int y){
         while(needsToSlide()) {
             for (int i = 1; i < width; i++) {
-                if (!board[height][i].isPresent()) {
+                if (!board[height][i].isPresent() && !(board[height][i + 1] instanceof WallCase)) {
                     slide(height, i + 1);
                 }
             }
         }
+        makeThemDrop(1, 1);
     }
 
     public void slide(int h, int w) {
+        boolean wall =false;
         for (int i = h; i >= 1; i--) {
-            board[i][w - 1] = board[i][w];
-            board[i][w] = new Case(false);
+            if(!(board[i][w - 1].isPresent())) {
+                if(!(board[i][w] instanceof WallCase)) {
+                    //if(notOnAWall(i, w)) {
+                        board[i][w - 1] = board[i][w];
+                        board[i][w] = new Case(false);
+                    //}
+                }else {
+                    break;
+                }
+            }
         }
         if (w + 1 < width) {
             slide(height, w + 1);
         }
+    }
+
+    public boolean notOnAWall(int h, int w){
+        boolean result = true;
+        for(int i = h; i>=1; i--){
+            if(board[i][w] instanceof WallCase){
+                result = false;
+            }
+        }
+        return result;
     }
 
     public void printCurrentBoard(){
@@ -253,28 +318,28 @@ public class Board {
 
     public LinkedList<String> giveMeColorAround(int h, int w){
         LinkedList<String> result = new LinkedList<String>();
-        if(board[h - 1][w - 1].isPresent()){
+        if(board[h - 1][w - 1].isPresent() && !(board[h - 1][w - 1] instanceof WallCase)){
             result.add(board[h - 1][w - 1].getColor());
         }
-        if(board[h - 1][w].isPresent()){
+        if(board[h - 1][w].isPresent() && !(board[h - 1][w] instanceof WallCase)){
             result.add(board[h - 1][w].getColor());
         }
-        if(board[h - 1][w + 1].isPresent()){
+        if(board[h - 1][w + 1].isPresent() && !(board[h - 1][w + 1] instanceof WallCase)){
             result.add(board[h - 1][w + 1].getColor());
         }
-        if(board[h][w - 1].isPresent()){
+        if(board[h][w - 1].isPresent() && !(board[h][w - 1] instanceof WallCase)){
             result.add(board[h][w - 1].getColor());
         }
-        if(board[h][w + 1].isPresent()){
+        if(board[h][w + 1].isPresent() && !(board[h][w + 1] instanceof WallCase)){
             result.add(board[h][w + 1].getColor());
         }
-        if(board[h + 1][w - 1].isPresent()){
+        if(board[h + 1][w - 1].isPresent() && !(board[h + 1][w - 1] instanceof WallCase)){
             result.add(board[h + 1][w - 1].getColor());
         }
-        if(board[h + 1][w].isPresent()){
+        if(board[h + 1][w].isPresent() && !(board[h][w] instanceof WallCase)){
             result.add(board[h + 1][w].getColor());
         }
-        if(board[h + 1][w + 1].isPresent()){
+        if(board[h + 1][w + 1].isPresent() && !(board[h + 1][w + 1] instanceof WallCase)){
             result.add(board[h + 1][w + 1].getColor());
         }
         return result;
@@ -283,7 +348,7 @@ public class Board {
     public boolean gameWin() {
         for(int i = 1; i<= height; i++) {
             for (int j = 1; j <= width; j++) {
-                if (board[i][j].isPresent()) {
+                if (board[i][j].isPresent() && !(board[i][j] instanceof WallCase)) {
                     return false;
                 }
             }

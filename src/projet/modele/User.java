@@ -43,6 +43,7 @@ public class User {
                     if (name.equals(v.getUserName())) {
                         userIsPresent = true;
                         v.setLevel(findLevel(line));
+                        v.setScoreTotal(findTotalScore(line));
                     }
                 }
             }
@@ -84,12 +85,12 @@ public class User {
     }
 
     public String makeUserLineForFile(){
-        return v.getUserName() + "|" + v.getLevel() + "\n";
+        return v.getUserName() + "|" + v.getLevel() + "#" + v.getScoreTotal() + '\n';
     }
 
-    public int findLevel(String line) {
-        return Integer.parseInt(line.substring(line.indexOf("|") +1));
-    }
+    public int findLevel(String line) { return Integer.parseInt(line.substring(line.indexOf("|") +1, line.indexOf("#")));}
+
+    public int findTotalScore(String line){ return Integer.parseInt(line.substring(line.indexOf("#") +1));}
 
     public String findUserName(String line) {
         return line.substring(0, line.indexOf("|"));
@@ -110,6 +111,7 @@ public class User {
                         line = makeUserLineForFile();
                     }
                 }
+                inputBuffer.append('\n');
                 inputBuffer.append(line);
             }
             file.close();
