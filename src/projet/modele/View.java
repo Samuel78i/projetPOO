@@ -115,7 +115,8 @@ public class View extends JFrame {
         map.put("red", "./Resources/RedSquare.png");
         map.put("green" , "./Resources/GreenSquare.png");
         map.put("wall", "./Resources/WallSquare.jpg");
-        Icon icon = new ImageIcon(map.get(s));
+        map.put("pet", "./Resources/PetSquare.jpg");
+        ImageIcon icon = new ImageIcon(map.get(s));
         JLabel jl = new JLabel(icon);
         jl.addMouseListener(new MouseAdapter() {
             @Override
@@ -131,6 +132,8 @@ public class View extends JFrame {
             for (int j = 1; j<=board.getHeight(); j++){
                 if(board.getBoard()[i][j].isPresent()) {
                     createJlabel(board.getBoard()[i][j].getColor(), i, j);
+                }else{
+                    panel.add(new JLabel());
                 }
             }
         }
