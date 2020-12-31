@@ -11,28 +11,22 @@ public class Board {
     private final int height;
     private int score;
     private boolean win;
-    private boolean pet;
     private int petOnBoard = 3;
 
     public Board(int width, int height){
         Random r = new Random();
         int random = r.nextInt(2);
-        if(random == 5) {
-            this.width = width;
-            this.height = height;
-            board = new Case[height +2][width+2];
-            win = false;
-            initBoard();
+        this.width = width;
+        this.height = height;
+        board = new Case[height +2][width+2];
+        win = false;
+        initBoard();
+        if (random== 0) {
             putWall();
         }else{
-            pet = true;
-            this.width = width;
-            this.height = height;
-            board = new Case[height + 2][width + 2];
-            win = false;
-            initBoard();
             putPet();
         }
+        makeTheBoardMoreWinnable();
     }
 
     public Board(int w, int h, boolean win){
@@ -84,39 +78,40 @@ public class Board {
             }
         }
         initAroundBoard();
-        makeTheBoardMoreWinnable();
     }
 
     public void makeTheBoardMoreWinnable(){
         Random ran = new Random();
         for(int i = 1; i< height +1; i++) {
             for (int j = 1; j < width + 1; j++) {
-                if(!aMoveIsPossible(i, j) && !sameColorInDiagonal(i, j)){
-                    LinkedList<String> colorAround = giveMeColorAround(i ,j);
-                    int random = ran.nextInt(colorAround.size());
-                    boolean randomNotGood = false;
-                    if(colorAround.get(random).equals("wall") || colorAround.get(random).equals("pet")){
-                        randomNotGood = true;
-                    }
-                    random = 0;
-                    while(randomNotGood){
-                        if(!colorAround.get(random).equals("wall") && !colorAround.get(random).equals("pet")){
-                            randomNotGood = false;
-                            break;
+                if (!(board[i][j] instanceof WallCase) && !(board[i][j] instanceof PetCase) && board[i][j].isPresent()) {
+                    if (!aMoveIsPossible(i, j) && !sameColorInDiagonal(i, j)) {
+                        LinkedList<String> colorAround = giveMeColorAround(i, j);
+                        int random = ran.nextInt(colorAround.size());
+                        boolean randomNotGood = false;
+                        if (colorAround.get(random).equals("wall") || colorAround.get(random).equals("pet")) {
+                            randomNotGood = true;
                         }
-                        random++;
-                    }
-                    if(colorAround.get(random).equals("green")){
-                        board[i][j] = new GreenCase();
-                    }
-                    if(colorAround.get(random).equals("red")){
-                        board[i][j] = new RedCase();
-                    }
-                    if(colorAround.get(random).equals("blue")){
-                        board[i][j] = new BlueCase();
-                    }
-                    if(colorAround.get(random).equals("yellow")){
-                        board[i][j] = new YellowCase();
+                        random = 0;
+                        while (randomNotGood) {
+                            if (!colorAround.get(random).equals("wall") && !colorAround.get(random).equals("pet")) {
+                                randomNotGood = false;
+                                break;
+                            }
+                            random++;
+                        }
+                        if (colorAround.get(random).equals("green")) {
+                            board[i][j] = new GreenCase();
+                        }
+                        if (colorAround.get(random).equals("red")) {
+                            board[i][j] = new RedCase();
+                        }
+                        if (colorAround.get(random).equals("blue")) {
+                            board[i][j] = new BlueCase();
+                        }
+                        if (colorAround.get(random).equals("yellow")) {
+                            board[i][j] = new YellowCase();
+                        }
                     }
                 }
             }
@@ -214,10 +209,7 @@ public class Board {
             if (aMoveIsPossible(h, w)) {
                 destroyAround(h, w);
                 makeThemDrop(1,1);
-                if(pet){
-                    checkIfPetDropped();
-                }
-
+                checkIfPetDropped();
             }
         }
         if(needsToSlide()){
@@ -245,6 +237,20 @@ public class Board {
 
     }
 
+    public void rocket(int w){
+        for(int i = 1; i< height + 1; i++){
+            if(board[i][w].isPresent() && !(board[i][w] instanceof WallCase) && !(board[i][w] instanceof PetCase)) {
+                board[i][w].erased();
+                score++;
+            }
+        }
+        makeThemDrop(1, 1);
+        checkIfPetDropped();
+        if(needsToSlide()){
+            makeThemSlide(1,1);
+        }
+        score = score * score;
+    }
 
     public void makeThemDrop(int x, int y){
         for(int i = x; i< height; i++) {

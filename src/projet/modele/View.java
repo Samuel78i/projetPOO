@@ -23,6 +23,9 @@ public class View extends JFrame {
     private int scoreTotal;
     private int lastTotalScore = 0;
     private int scoreOfTheGame;
+    private boolean rocketInUse = false;
+    private boolean rocketNotUsed = true;
+
 
     public View(Board b, Controller c){
         u.setView(this);
@@ -37,7 +40,6 @@ public class View extends JFrame {
     }
 
     public String getUserName(){ return userName;}
-    public void setUserName(String s){ userName = s;}
     public int getLevel(){ return level;}
     public void setLevel(int i){ level = i;}
     public void setBoard(Board b){ board = b;}
@@ -46,6 +48,9 @@ public class View extends JFrame {
     public int getLastTotalScore(){ return lastTotalScore;}
     public void setScoreTotal(int i){ scoreTotal = i;}
     public int getScoreTotal(){ return scoreTotal;};
+    public boolean getRocketInUse(){ return rocketInUse;}
+    public void setRocketInUse(boolean b){ rocketInUse = b;}
+    public void setRocketNotUsed(boolean b){ rocketNotUsed = b;}
 
     private void launchUserSelection() {
         panel.removeAll();
@@ -141,7 +146,7 @@ public class View extends JFrame {
 
     public void update() {
         panel.removeAll();
-
+        updateScore();
         if(isTheGameWin()){
             controller.gameWon();
         }else if(isTheGameOver()){
@@ -157,7 +162,6 @@ public class View extends JFrame {
                     }
                 }
             }
-            updateScore();
             panel.revalidate();
             repaint();
         }
@@ -193,11 +197,24 @@ public class View extends JFrame {
         JLabel j1 = new JLabel("Score Actuel " + scoreOfTheGame);
         JLabel j2 = new JLabel("Score Total " + scoreTotal);
 
-        layout.setHorizontalGroup(layout.createSequentialGroup() .addGroup(layout.createParallelGroup(LEADING).addComponent(j).addComponent(j1).addComponent(j2)));
-        layout.setVerticalGroup(layout.createSequentialGroup().addComponent(j).addComponent(j1).addComponent(j2));
-        lvlProgression.add(j);
-        lvlProgression.add(j1);
-        lvlProgression.add(j2);
+        if(scoreOfTheGame > 250 && rocketNotUsed) {
+            JButton rocket = new JButton(new ImageIcon("./Resources/rocket.jpg"));
+            rocket.addActionListener((event) -> {
+                rocketInUse = !rocketInUse;
+            });
+            layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(layout.createParallelGroup(LEADING).addComponent(j).addComponent(j1).addComponent(j2).addComponent(rocket)));
+            layout.setVerticalGroup(layout.createSequentialGroup().addComponent(j).addComponent(j1).addComponent(j2).addComponent(rocket));
+            lvlProgression.add(j);
+            lvlProgression.add(j1);
+            lvlProgression.add(j2);
+            lvlProgression.add(rocket);
+        }else {
+            layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(layout.createParallelGroup(LEADING).addComponent(j).addComponent(j1).addComponent(j2)));
+            layout.setVerticalGroup(layout.createSequentialGroup().addComponent(j).addComponent(j1).addComponent(j2));
+            lvlProgression.add(j);
+            lvlProgression.add(j1);
+            lvlProgression.add(j2);
+        }
     }
 
 

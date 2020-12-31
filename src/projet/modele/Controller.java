@@ -20,8 +20,14 @@ public class Controller {
 
     public void setU(User user){ u = user;}
 
-    public void iconClicked(int w, int h) {
-        board.destroy(w, h);
+    public void iconClicked(int h, int w) {
+        if(view.getRocketInUse()){
+            board.rocket(w);
+            view.setRocketNotUsed(false);
+            view.setRocketInUse(false);
+        }else {
+            board.destroy(h, w);
+        }
         view.update();
     }
 
@@ -48,23 +54,27 @@ public class Controller {
     public boolean isTheGameWin() {return board.gameWin(); }
 
     public void gameWon(){
-        board = new Board(board.getWidth(), board.getHeight());
-        view.setBoard(board);
-        view.setScoreOfTheGame(0);
-        view.setLastTotalScore(view.getScoreTotal());
-        u.updateLevel();
-        view.update();
-    }
-
-    public void gameLost(){
         if(board.getWin()) {
             board = new Board(board.getWidth(), board.getHeight(), true);
         }else {
             board = new Board(board.getWidth(), board.getHeight());
         }
         view.setBoard(board);
+        view.setScoreOfTheGame(0);
+        view.setLastTotalScore(view.getScoreTotal());
+        view.setRocketInUse(false);
+        view.setRocketNotUsed(true);
+        u.updateLevel();
+        view.update();
+    }
+
+    public void gameLost(){
+        board = new Board(board.getWidth(), board.getHeight());
+        view.setBoard(board);
         view.setScoreTotal(view.getLastTotalScore());
         view.setScoreOfTheGame(0);
+        view.setRocketInUse(false);
+        view.setRocketNotUsed(true);
         view.displayGameOver();
     }
 }
