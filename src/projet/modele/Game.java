@@ -1,12 +1,12 @@
 package projet.modele;
 
 public class Game {
-    private Player p;
+    private final Player p;
     private Board b;
 
     public Game(){
         p = new Player();
-        b = new Board(10, 10);
+        b = new Board(9, 9);
     }
 
     public void play(){
@@ -16,8 +16,7 @@ public class Game {
             while (keepPlaying) {
                 b.printCurrentBoard();
                 keepPlaying = !b.gameOver();
-                keepPlaying = p.keepPlaying();
-                if(keepPlaying == false){
+                if(!keepPlaying){
                     break;
                 }
                 b.destroy(p.askDestroyX(b), p.askDestroyY(b));
@@ -34,7 +33,6 @@ public class Game {
         while (keepPlaying) {
             keepPlaying = !b.gameOver();
             b.printCurrentBoard();
-            keepPlaying = p.keepPlaying();
             b.destroy(p.askDestroyX(b), p.askDestroyY(b));
         }
         if(p.playAgain()){

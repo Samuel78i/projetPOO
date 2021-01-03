@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Player {
     private String name;
-    private Scanner scanAnswer;
+    private final Scanner scanAnswer;
 
     public Player(){
         name = "The secret guy";
@@ -18,10 +18,7 @@ public class Player {
     public boolean wantToPlay(){
         System.out.println("Do you want to play ?");
         String a = scanAnswer.nextLine();
-        if(a.equals("yes")){
-            return true;
-        }
-        return false;
+        return a.equals("yes");
     }
 
     public void askSetName(){
@@ -65,25 +62,9 @@ public class Player {
     }
 
     public boolean playAgain(){
-        System.out.println("Nice game, good job. Thanks for playing");
+        System.out.println("Nice game" + name + ", good job. Thanks for playing");
         System.out.println("Do you want to play again ?");
         String a = scanAnswer.nextLine();
-        if(a.equals("yes")){
-            return true;
-        }else{
-            return false;
-        }
+        return a.equals("yes");
     }
-
-    public boolean keepPlaying(){
-        System.out.println("Do you want to continue");
-        String a = scanAnswer.nextLine();
-        if(a.equals("yes")){
-            return true;
-        }else{
-            System.out.println("See you soon");
-            return false;
-        }
-    }
-
 }

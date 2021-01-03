@@ -1,7 +1,7 @@
 package projet.modele;
 
 public class BlueCase extends Case{
-    private String color;
+    private final String color;
 
     public BlueCase(){
         super();

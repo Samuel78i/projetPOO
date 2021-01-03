@@ -1,7 +1,7 @@
 package projet.modele;
 
 public class PetCase extends Case {
-    private String color;
+    private final String color;
 
     public PetCase() {
         super();

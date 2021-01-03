@@ -6,15 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import static javax.swing.GroupLayout.Alignment.*;
 
 
 public class View extends JFrame {
-    private JPanel panel= new JPanel();
-    private JPanel lvlProgression = new JPanel();
+    private final JPanel panel= new JPanel();
+    private final JPanel lvlProgression = new JPanel();
     private final Controller controller;
     private Board board;
     private String userName;
@@ -47,7 +46,7 @@ public class View extends JFrame {
     public void setLastTotalScore(int i){ lastTotalScore = i;}
     public int getLastTotalScore(){ return lastTotalScore;}
     public void setScoreTotal(int i){ scoreTotal = i;}
-    public int getScoreTotal(){ return scoreTotal;};
+    public int getScoreTotal(){ return scoreTotal;}
     public boolean getRocketInUse(){ return rocketInUse;}
     public void setRocketInUse(boolean b){ rocketInUse = b;}
     public void setRocketNotUsed(boolean b){ rocketNotUsed = b;}
@@ -79,15 +78,12 @@ public class View extends JFrame {
         panel.setSize(500, 500);
 
         final String[] user = {""};
-        inputButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                user[0] = editTextArea.getText();
-                editTextArea.setText("");
-                userName = user[0];
-                u.inFile();
-                launchMenu();
-            }
+        inputButton.addActionListener(e -> {
+            user[0] = editTextArea.getText();
+            editTextArea.setText("");
+            userName = user[0];
+            u.inFile();
+            launchMenu();
         });
     }
 
@@ -97,15 +93,9 @@ public class View extends JFrame {
         JButton rules = new JButton("Rules");
         JButton quit = new JButton("Quit");
 
-        play.addActionListener((event) -> {
-            controller.play();
-        });
-        rules.addActionListener((event) -> {
-            controller.rules();
-        });
-        quit.addActionListener((event) -> {
-            controller.quit();
-        });
+        play.addActionListener((event) -> controller.play());
+        rules.addActionListener((event) -> controller.rules());
+        quit.addActionListener((event) -> controller.quit());
         panel.add(play);
         panel.add(rules);
         panel.add(quit);
@@ -172,9 +162,7 @@ public class View extends JFrame {
 
         JTextArea loose = new JTextArea("PERDU");
         JButton replay = new JButton("REJOUER");
-        replay.addActionListener((event) -> {
-            update();
-        });
+        replay.addActionListener((event) -> update());
 
         panel.add(loose);
         panel.add(replay);
@@ -199,9 +187,8 @@ public class View extends JFrame {
 
         if(scoreOfTheGame > 250 && rocketNotUsed) {
             JButton rocket = new JButton(new ImageIcon("./Resources/rocket.jpg"));
-            rocket.addActionListener((event) -> {
-                rocketInUse = !rocketInUse;
-            });
+            rocket.addActionListener((event) -> rocketInUse = !rocketInUse);
+
             layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(layout.createParallelGroup(LEADING).addComponent(j).addComponent(j1).addComponent(j2).addComponent(rocket)));
             layout.setVerticalGroup(layout.createSequentialGroup().addComponent(j).addComponent(j1).addComponent(j2).addComponent(rocket));
             lvlProgression.add(j);
@@ -223,9 +210,8 @@ public class View extends JFrame {
         Icon icon = new ImageIcon("./Resources/YellowSquare.jpeg");
         JLabel jl = new JLabel(icon);
         JButton back = new JButton("BACK");
-        back.addActionListener((event) -> {
-            controller.menu();
-        });
+        back.addActionListener((event) -> controller.menu());
+
         panel.add(jl);
         panel.add(back);
         panel.revalidate();

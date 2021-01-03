@@ -1,8 +1,7 @@
 package projet.modele;
-import java.util.Random;
 
 public class Case {
-    private boolean present=false;
+    private boolean present;
 
     public Case(){
         present = true;

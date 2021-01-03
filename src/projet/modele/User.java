@@ -20,7 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class User {
-    private String file ="./Resources/userList.txt";
+    private final String file ="./Resources/userList.txt";
     private View v;
 
     public void setView(View vi){
@@ -63,7 +63,6 @@ public class User {
             StringBuffer inputBuffer = new StringBuffer();
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
-            int compteur = 0;
 
             while ((line = reader.readLine()) != null) {
                 inputBuffer.append(line);

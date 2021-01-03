@@ -1,7 +1,5 @@
 package projet.modele;
 
-import java.util.concurrent.TimeUnit;
-
 public class Controller {
     private Board board;
     private View view;
@@ -15,8 +13,6 @@ public class Controller {
     public void setView(View v){
         view = v;
     }
-
-    public void setBoard(Board b){ board = b;}
 
     public void setU(User user){ u = user;}
 
