@@ -11,6 +11,7 @@ public class Board {
     private boolean win;
     private int petOnBoard = 3;
 
+    //Constructeur aléatoire
     public Board(int width, int height){
         Random r = new Random();
         int random = r.nextInt(2);
@@ -20,13 +21,37 @@ public class Board {
         win = false;
         initBoard();
         if (random== 0) {
-            putWall();
+            int wall = r.nextInt(3);
+            putWall(wall);
         }else{
             putPet();
         }
         makeTheBoardMoreWinnable();
     }
 
+    //Constructeur en fonction du niveau
+    public Board(int width, int height, int lvl){
+        this.width = width;
+        this.height = height;
+        board = new Case[height +2][width+2];
+        win = false;
+        initBoard();
+        if(lvl < 5){
+            putPet();
+        }
+        if(lvl >= 5 && lvl < 10){
+            putWall(0);
+        }
+        if(lvl >= 10 && lvl < 15){
+            putWall(2);
+        }
+        if(lvl >= 15){
+            putWall(1);
+        }
+        makeTheBoardMoreWinnable();
+    }
+
+    //Constructeur pour gagner en 1 coup
     public Board(int w, int h, boolean win){
         this.width = w;
         this.height = h;
@@ -84,6 +109,7 @@ public class Board {
             for (int j = 1; j < width + 1; j++) {
                 if (!(board[i][j] instanceof WallCase) && !(board[i][j] instanceof PetCase) && board[i][j].isPresent()) {
                     if (!aMoveIsPossible(i, j) && !sameColorInDiagonal(i, j)) {
+                        //cette liste represente toute les couleurs entourant la case actuelle
                         LinkedList<String> colorAround = giveMeColorAround(i, j);
                         int random = ran.nextInt(colorAround.size());
                         boolean randomNotGood = false;
@@ -143,10 +169,9 @@ public class Board {
         }
     }
 
-    public void putWall(){
-        Random ran = new Random();
-        int random = ran.nextInt(3);
-        if(random == 0){
+    public void putWall(int lvl){
+        //schema d'obstacles predefinis
+        if(lvl == 0){
             board[2][5] = new WallCase();
             board[3][5] = new WallCase();
             board[5][3] = new WallCase();
@@ -156,7 +181,7 @@ public class Board {
             board[7][5] = new WallCase();
             board[8][5] = new WallCase();
         }
-        if(random == 1){
+        if(lvl == 1){
             board[2][3] = new WallCase();
             board[2][4] = new WallCase();
             board[2][6] = new WallCase();
@@ -167,7 +192,7 @@ public class Board {
             board[4][6] = new WallCase();
             board[5][5] = new WallCase();
         }
-        if(random == 2){
+        if(lvl == 2){
             board[4][3] = new WallCase();
             board[4][4] = new WallCase();
             board[4][5] = new WallCase();
@@ -187,6 +212,7 @@ public class Board {
         initAroundBoard();
     }
 
+    //initialisation de du contour du plateau avec des cases non présentes
     private void initAroundBoard() {
         for (int i = 0; i <= height +1; i++) {
             board[i][0].erased();
@@ -205,11 +231,15 @@ public class Board {
     public void destroy(int h, int w){
         if (board[h][w].isPresent() && !(board[h][w] instanceof WallCase) && !(board[h][w] instanceof PetCase)){
             if (aMoveIsPossible(h, w)) {
+                //je detruit les cases
                 destroyAround(h, w);
+                //je fait chuter les cases
                 makeThemDrop(1,1);
+                //je verifie si des animaux sont tombés
                 checkIfPetDropped();
             }
         }
+        //si besoin de faire glisser je fais glisser
         if(needsToSlide()){
             makeThemSlide();
         }
@@ -220,6 +250,7 @@ public class Board {
     public void destroyAround(int h, int w){
         board[h][w].erased();
         score++;
+        //verification des couleurs autours de la case actuelle
         if (board[h-1][w].isPresent() && !(board[h-1][w] instanceof WallCase) && board[h - 1][w].getColor().equals(board[h][w].getColor())){
             destroyAround(h-1, w);
         }
@@ -236,6 +267,7 @@ public class Board {
     }
 
     public void rocket(int w){
+        //suppession d'une colonne
         for(int i = 1; i< height + 1; i++){
             if(board[i][w].isPresent() && !(board[i][w] instanceof WallCase) && !(board[i][w] instanceof PetCase)) {
                 board[i][w].erased();
@@ -255,6 +287,7 @@ public class Board {
             for (int j = y; j <= width; j++) {
                 if(board[i][j].isPresent()){
                     if(!board[i+1][j].isPresent() && !(board[i][j] instanceof WallCase)){
+                        //je deplace la case d'un cran vers le bas
                         board[i+1][j]=board[i][j];
                         board[i][j] = new Case(false);
                         makeThemDrop(i-1, j);
@@ -266,15 +299,18 @@ public class Board {
 
     private boolean needsToSlide() {
         for(int i = 2; i<= width; i++) {
+            //toute une colonne a besoin de glisser
             if (board[height][i].isPresent() && !board[height][i - 1].isPresent() && !(board[height][i] instanceof WallCase)) {
                 return true;
             }
         }
         for(int i = 1; i<height ; i++){
             for(int j = 2; j<width + 1; j++){
+                //une case a besoin de glisser sur un obstacle
                 if(board[i][j].isPresent() && board[i+1][j] instanceof WallCase && board[i+1][j-1] instanceof WallCase && !board[i][j-1].isPresent()){
                     return true;
                 }
+                //une case doit tomber d'un obstacle
                 if(!(board[i][j] instanceof WallCase) && board[i][j].isPresent() && board[i+1][j] instanceof WallCase && !board[i+1][j-1].isPresent()){
                     return true;
                 }
@@ -306,6 +342,7 @@ public class Board {
         for (int i = h; i >= 1; i--) {
             if(!(board[i][w - 1].isPresent())) {
                 if(!(board[i][w] instanceof WallCase)) {
+                    //je deplace la case d'un cran vers la gauche
                     board[i][w - 1] = board[i][w];
                     board[i][w] = new Case(false);
                 }else {
@@ -322,6 +359,7 @@ public class Board {
         for (int i = h; i >= 1; i--) {
             if(!board[i][w - 1].isPresent()){
                 if(!(board[i][w] instanceof WallCase)) {
+                    //je deplace la case d'un cran vers la gauche
                     board[i][w - 1] = board[i][w];
                     board[i][w] = new Case(false);
                 }else {
@@ -330,6 +368,7 @@ public class Board {
             }
         }
         if (w + 1 < width) {
+            //Si la prochaine case est bien sur un obstacle
             if(board[h+1][w+1] instanceof WallCase) {
                 slideOnAWall(h, w + 1);
             }
@@ -338,6 +377,7 @@ public class Board {
 
     public void slideDownAWall(int h, int w) {
         if (board[h][w].isPresent() && !(board[h][w] instanceof WallCase)) {
+            //je fais tomber une case d'un obstacle
             board[h + 1][w - 1] = board[h][w];
             board[h][w] = new Case(false);
             makeThemDrop(1, 1);
@@ -436,6 +476,7 @@ public class Board {
     }
 
     public boolean gameWin() {
+        //si il n'y a plus d'animaux la parti est gagné
         if(petOnBoard == 0){
             return true;
         }

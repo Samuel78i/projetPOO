@@ -53,8 +53,9 @@ public class Controller {
         if(board.getWin()) {
             board = new Board(board.getWidth(), board.getHeight(), true);
         }else {
-            board = new Board(board.getWidth(), board.getHeight());
+            board = new Board(board.getWidth(), board.getHeight(), view.getLevel() + 1);
         }
+        //je met a jour tout les informations
         view.setBoard(board);
         view.setScoreOfTheGame(0);
         view.setLastTotalScore(view.getScoreTotal());
@@ -65,7 +66,8 @@ public class Controller {
     }
 
     public void gameLost(){
-        board = new Board(board.getWidth(), board.getHeight());
+        board = new Board(board.getWidth(), board.getHeight(), view.getLevel());
+        //je met a jour tout les informations
         view.setBoard(board);
         view.setScoreTotal(view.getLastTotalScore());
         view.setScoreOfTheGame(0);

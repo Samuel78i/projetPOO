@@ -26,9 +26,11 @@ public class User {
             reader = new BufferedReader(new FileReader(file));
             reader.mark(0);
             while ((line = reader.readLine()) != null) {
+                // parcours tout mon fichier a la recherche du pseudo corespondant
                 if(line.length() != 0) {
                     name = findUserName(line);
                     if (name.equals(v.getUserName())) {
+                        //pseudo present dans le fichier donc je met a jour les infos du jeu
                         userIsPresent = true;
                         v.setLevel(findLevel(line));
                         v.setScoreTotal(findTotalScore(line));
@@ -47,6 +49,7 @@ public class User {
     }
 
     public void makeNewLine(){
+        //Si le pseudo n'était pas présent on le rajoute
         try {
             StringBuffer inputBuffer = new StringBuffer();
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -86,6 +89,7 @@ public class User {
     public void updateLevel(){
         v.setLevel(v.getLevel()+1);
         try {
+            //reecriture dans mon fichier à partir des nouvelles infos
             BufferedReader file = new BufferedReader(new FileReader("./Resources/userList.txt"));
             StringBuffer inputBuffer = new StringBuffer();
             String line;

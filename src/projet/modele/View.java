@@ -38,6 +38,7 @@ public class View extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
+    //tout les getters et setters
     public String getUserName(){ return userName;}
     public int getLevel(){ return level;}
     public void setLevel(int i){ level = i;}
@@ -79,6 +80,7 @@ public class View extends JFrame {
 
         final String[] user = {""};
         inputButton.addActionListener(e -> {
+            // je recupere le text entre par l'utilisateur
             user[0] = editTextArea.getText();
             editTextArea.setText("");
             userName = user[0];
@@ -123,6 +125,7 @@ public class View extends JFrame {
     }
 
     public void initCase(){
+        // initialisation du plateau de la vue
         for (int i = 1; i<=board.getWidth(); i++){
             for (int j = 1; j<=board.getHeight(); j++){
                 if(board.getBoard()[i][j].isPresent()) {
@@ -142,6 +145,7 @@ public class View extends JFrame {
         }else if(isTheGameOver()){
             controller.gameLost();
         }else {
+            //mise a jour de la vue grâce aux nouvelles informations
             for (int i = 1; i <= board.getWidth(); i++) {
                 for (int j = 1; j <= board.getHeight(); j++) {
                     if (board.getBoard()[i][j].isPresent()) {
@@ -186,6 +190,7 @@ public class View extends JFrame {
         JLabel j2 = new JLabel("Score Total " + scoreTotal);
 
         if(scoreOfTheGame > 250 && rocketNotUsed) {
+            //affichage du bonus
             JButton rocket = new JButton(new ImageIcon("./Resources/rocket.jpg"));
             rocket.addActionListener((event) -> rocketInUse = !rocketInUse);
 
@@ -196,6 +201,7 @@ public class View extends JFrame {
             lvlProgression.add(j2);
             lvlProgression.add(rocket);
         }else {
+            //bonus non disponible
             layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(layout.createParallelGroup(LEADING).addComponent(j).addComponent(j1).addComponent(j2)));
             layout.setVerticalGroup(layout.createSequentialGroup().addComponent(j).addComponent(j1).addComponent(j2));
             lvlProgression.add(j);
@@ -207,8 +213,9 @@ public class View extends JFrame {
 
     public void launchRules(){
         panel.removeAll();
-        Icon icon = new ImageIcon("./Resources/YellowSquare.jpeg");
-        JLabel jl = new JLabel(icon);
+        JLabel jl = new JLabel("Pour detruire une Case il faut cliquer sur une case qui est collé a une case de la même couleur."
+                + "\n" + "Il y a 2 mode de jeu, si des animaux sont présent , il faut les faire tomber"
+                + "\n" +" Sinon il faut tout détruire !");
         JButton back = new JButton("BACK");
         back.addActionListener((event) -> controller.menu());
 
@@ -235,6 +242,7 @@ public class View extends JFrame {
         initCase();
         panel.revalidate();
 
+        //ceci sert à ce que le scoretotal ne soit pas réinitialiser à 0 après une défaite si l'uitlisateur avait déjà joué
         if(scoreTotal>0){
             lastTotalScore = scoreTotal;
         }

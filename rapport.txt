@@ -1,0 +1,70 @@
+﻿Rapport de projet POO
+
+Ce projet a été assez plaisant a réaliser dans l’ensemble. Cependant il n’a pas été très facile, nous allons voir ensemble dans ce rapport, les fonctionnalités actuelles, les problèmes que j’ai pu rencontrer, et ceux qui sont encore présent, et enfin, les fonctionnalité que je n’ai pu encore implémenter. Pour ce faire, je vais raconter mon avancé au fur et à mesure, de ce projet.
+
+I – Modèle
+
+Mon premier reflex, fus de m’occuper du modèle. J’ai donc commencer par créer la classe Board. L’idée m’est directement venu en tête, de remplir le plateau de Case, qui représenterai toutes les cases présente dans le jeu Pet Rescue Saga, a savoir : des cases de couleur (destructible), des cases indestructible représentant des obstacle, et des animaux a secourir.
+J’ai commencer par simplement implémenter les Cases de couleur, j’ai donc créer la classe Case et les 4 cases de couleur héritant de Case, a savoir BlueCase, GreenCase, YellowCase, RedCase. Des classes assez simple, possédant un String couleur, et un boolean présent, qui me sert a savoir si la case doit être afficher ou a déjà été détruite. 
+Pour la conception du plateau en lui même, je me suis fortement inspirés du TP fait en cours sur le démineur car les fonctionnalité de destruction son très similaire. J’ai donc fait un tableau de tableau  entouré de Case dite non présente (méthode « initAroundBoard »), mon tableau de tableau de Case est une variable appelé board dans mon projet. Ce board, possède donc une longueur et largeur supérieur a ce qui est jouable. Ceci me permet de moins m’embêter en regardant les coins et les bords de mon plateau.
+Au début mon tableau s’initialisait de manière totalement aléatoire.
+
+Le système de destruction des Cases fut assez rapide, je me suis comme pour le plateau, inspirés du TP sur le démineur. J’ai donc une fonction récursive « destroyAround » appelé par « destroy » si et seulement si les valeur x et y pris en arguments sont bien destructible. Si c’est bien le cas, destroyAround va détruire toutes les cases de la même couleur qui sont collé. Ici, quand je parle de détruire une Case, j’entends passer le boolean présent, de la classe Case, qui était vrai à faux. 
+Pour vérifier tout ce code, j’ai du créer une méthode me permettant d’afficher le plateau, j’ai donc ajouter a mon code « printCurrentBoard ».
+
+Maintenant, il fallait faire l’une des fonctionnalités les plus importantes du jeu, la chute de Cases. Ceci m’a pris plus de temps que ce que j’aurais pu penser. Je suis passer par plein de phases différente, pour finalement revenir sur l’une de mes premières idée, à quelques choses prêt. Une méthode récursive m’a tout de suite sembler obligatoire. Dans la méthode que j’ai appelé « makeThemDrop », je parcours donc tout le plateau, et dès qu’une Case possède en dessous d’elle une Case vide (Case dont présent == false), je les échanges, et je rappelle cette même méthode sur la Case supérieur a celle que je viens de faire tomber. Ce qui réduit de beaucoup le nombre d’itérations de ma méthode puisque a la base je partait toujours de la première Case après en avoir fait tomber une.
+
+L’implémentation du glissement des Cases a sûrement été la partie m’aillant posé le plus de soucis, mais uniquement après l’ajout des obstacle. Avant leur ajout, le glissement m’a parus assez simple, dans « makeThemSlide » je regardais, la ligne qui correspondait a ma hauteur, et je la parcourais sur toute la largeur. Si une Case était précédé d’une case vide, j’appelais la méthode « slide », qui utilise le même fonctionnement que « makeThemDrop », mais à la vertical.
+
+Le jeu est désormais fonctionnel, mais rien ne me permet de déterminer si la partie est terminer ou non. J’ai donc ajouter deux méthodes assez simple, qui vérifie si la partie est perdu, ou gagner. Pour la partie gagner, c’est assez simple, il suffit de regarder si toute les cases ont été détruite, soit présent == false. Pour ce qui est d’une partie perdu, il faut vérifier qu’il n’y est plus aucun coup possible. J’ai donc ajouté « aMoveIsPossible » qui renvoie true si une case qui est collé a celle donné en argument possède la même couleur.
+
+II – Jeu en mode texte
+
+Mon jeu étant désormais jouable, j’ai commencé à réaliser le jeu en mode texte. Je me suis, pour ceci, encore beaucoup inspirés du TP sur le démineur. Ma classe Game, est en quelque sorte la classe mère, le plus important a été fait dans la classe Player. En effet, dans Game, je ne fais qu’appeler en boucle le Scanner dans la classe Player qui me permet d’étudier les réponses écrites par l’utilisateur. Aucune difficulté rencontrer sur cette partie, étant donné que nous l’avions en quelque sorte déjà faite.
+
+III – La Vue
+
+La vue a été une grosse partie de mon travail. J’y est passé beaucoup de temps. J’ai commencer par un affichage simple. J’ai décidé de faire correspondre la taille de la fenêtre avec la taille de mon plateau. J’ai directement penser a un Jpanel possédant un GridLayout en guise de layout. Cette idée m’est venu après le TP avec les JSliders permettant de modifier un autre panel ou la couleur était affiché. Je me suis renseigner un petit peu sur internet, et je me suis vite aperçu que les Icons était ce que je devais utiliser pour afficher mes différentes images.
+J’ai donc un panel, remplis de Jlabel possédant tous une Icon, qui représente le plateau. Chaque Jlabel correspond donc a une Case de mon tableau. Pour initialiser se panel, je me base sur mon plateau que je possède en variable, en fonction de la couleur de la Case je créer un Jlabel et j’y ajoute l’Icon qui correspond a la couleur de cette même Case. Je n’est pas tout de suite pensé a utiliser une map, j’avais donc beaucoup de code pour pas grand-chose. Utiliser une map pour repartir à chaque Jlabel la bonne image a beaucoup simplifié mon code.
+
+Tout les Jlabel possède donc un MouseListener qui lorsque celui est cliqué, il lance depuis le contrôleur la méthode « destroy » de Board, qui se charge de tout faire tomber et glisser aussi. Après ça, le contrôleur met a jour la vue. Pour faire ceci, je retire tout les Jlabels et je remet tout par rapport a mon nouveau plateau. C’est lors de la mise a jour de la vue que je regarde si la partie est terminer ou non, et en afficher les informations correspondante. Si la partie est perdu, je retire tout les Jpanel de mon panel principal, je change son layout, et je rajoute un Jbutton rejouer. Si celui-ci est pressé, une nouvelle partie se lance.
+
+Voilà, la vue est désormais fonctionnelle. Mais pas très propre et professionnelle. J’ai donc rajouter un menu à l’ouverture du jeu. Permettant de jouer, lire les règles ou quitter.
+Pour me rapprocher de ce que propose Pet Rescue Saga, je me devais d’implémenter un système de score. C’est donc ce que j’ai fait. J’ai ajouter a la classe Board un compteur de score, qui compte le score du dernier coup réaliser. Grâce a ceci, à chaque mise a jour de ma vue, je met aussi a jour le score de la partie actuelle, et le score total. Dès qu’une partie est gagner, j’augmente le compteur de niveau de 1. Pour afficher tout ces élément de progression, j’ai créer un panel appeler « lvlProgression ». Mon contentPane possède desormais d’un coter le jeu, et de l’autre les statistiques de jeu, repartit grâce a un GridLayout. 
+Le système de progression que je venais de créer était bien. Mais toute cette progression était oublié dès que la fenêtre de jeu était fermé. L’idée des utilisateurs m’est donc venu.
+
+IV – User
+
+La gestion d’utilisateur a été totalement nouvelle pour moi. Ma première idée a été de faire un JtextField ou l’utilisateur rentrerai son pseudo. Dans la vue, toute la méthode « lauchUserSelection », représente ceci. Mais il fallait bien que les pseudo soit stocker quelque part, j’ai donc décider de faire un fichier texte. Dans celui-ci, je stockerais donc le pseudo de l’utilisateur, mais aussi son niveau, et score total, tous séparer par des caractère peu utilisé. J’ai donc une forme comme ceci : « pseudo|1#500 ». Ou 1 représente le niveau et 500 le score total.
+
+Je ne savais absolument pas comment depuis du code, on pouvait modifier un fichier texte. Je me suis donc directement renseigner sur internet. Et dans la plupart des cas les personnes utilisaient des StringBuffer pour réécrire dans le fichier, et des BufferedReader pour lire les lignes du fichier.
+Grâce a ceci, je vérifie si le pseudo est déjà dans le fichier, à l’aide du BufferedReader, si c’est le cas, je met a jour le niveau et le score total de la partie, l’utilité des séparateur est la, avec ces séparateur, je peux facilement accéder a ces valeurs, qu’importe le niveau ou le score. Sinon l’utilisateur n’est pas présent dans le fichier je créer une nouvelle ligne. 
+Lorsque un niveau est passé, je met a jour le fichier texte en copiant tout le texte de fichier dans un StringBuffer en modifiant la ligne correspondant à l’utilisateur actuel. Une fois le StringBuffer remplis, je remplace tout le texte de mon fichier par le StringBuffer
+
+Le système d’utilisateur et la vue étant fonctionnel, le jeu jouable. Il ne me manquait plus qu’a ajouter les différent mode de jeu.
+
+V – Mode de Jeu
+
+En m’inspirant de Pet Rescue Sage, j’ai mis au point deux différent mode de jeu, j’ai commencé par implémenter les obstacles. Puis en deuxième mode de jeu, les animaux qu’il faut faire tomber. Ces deux modes de jeu sont choisis aléatoirement lors de la création du plateau
+
+Pour les obstacles, j’ai rajouté une classe WallCase, héritant de Case. Pour sa gestion, j’ai mis au point plusieurs schéma d’obstacles. Pour le bon fonctionnement de celle-ci. J’ai du rajouter beaucoup de test dans la classe Board. En effet, au début de son implémentation, les obstacles bougeaient n’importe comment sur le plateau.
+
+Le plus dur avec l’implémentation de WallCase a été la gestion du glissement, c’est ce qui avec du recul, m’a causé le plus de problèmes. J’ai du regardé beaucoup de différentes situation dans le jeu Pet Rescue Saga, pour pouvoir bien comprendre l’algorithme attendu. J’ai donc ajouter a mes différentes méthodes permettant de glisser, d’autre situation. Comme le glissement sur les obstacles (méthode « slideOnAWall »), ou encore la chute des objets posé sur les obstacles(méthode « slideDownAWall »). J’ai eu pas mal de difficulté avec cet algorithme, et je suis certain que je peux encore l’améliorer, je fais trop d’itérations, mais par manque de temps je ne pourrais pas. 
+
+Le deuxième mode de jeu a été beaucoup plus simple a faire que l’autre. J’ai juste a supprimer la 1ére ligne de mon plateau, y mettre aléatoirement trois animaux, et changer la condition de victoire. La partie est gagner si et seulement si, les trois animaux sont tomber  la méthode « checkIfPetDropped » réduit mon compteur d’animaux, et lorsque celui-ci atteint zéro, la partie s’arrête.
+
+J’ai aussi ajouter un bonus comme celui de Pet Rescue Saga. Dès qu’un certain seuil de point est atteint le bonus est disponible, il permet de détruire toute une colonne d’un seul coup. Cela m’a pris un peu de temps car j’ai eu du mal avec l’affichage de ce bouton. En effet le bouton ne devait apparaître que si le seuil avait été atteint et disparaître quand il a été utilisé. J’ai donc ajouter au Jpanel « lvlProgression » ce bouton. Grâce a quelques variables dans ma classe de Vue (rocketNotUsed, rocketInUse) , j’ai pu réaliser ceci. 
+
+Je me suis vite rendu compte après l’ajout de ces modes de jeu. Qu’actuellement mon jeu était impossible. Il faillait que je fasse quelque chose a propos de ça. Le hasard n’est pas vraiment possible pour ce genre de jeu. Mais je ne voyais pas faire 20 niveau a la main. Je me suis donc arrangé pour rendre le hasard plus « jouable ». 
+J’ai donc mis en place la méthode « makeTheBoardMoreWinnable ». Cette méthode modifie le plateau généré aléatoirement, il faut que chaque Case soit entourer d’au moins une Case de la même couleur. Pour ce faire, dès que je rencontre une case qui n’est pas entourer d’une même couleur, j’enregistre toute les couleurs qu’il y a autour d’elle dans une liste, et je remplace cette case aléatoirement par une des couleurs présente dans ma liste. 
+Ceci ne rend pas mon jeu gagnable à chaque partie, mais j’en augmente beaucoup les chances.
+
+VI – Problèmes actuels et pistes d’extensions
+
+Le plus gros problème actuel est je pense, c’est le fait qu’il n’y ai aucune animation de mouvement. Cela rend le jeu difficile à suivre. J’ai déjà essayer d’améliorer ceci, en retardant chaque affichage, pour donner une impression d’animation. Mais pour une raison qui m’échappe toujours, mes affichages se réalisait qu’importe la durer de mon timer. Pour les timer j’ai essayer d’utiliser  TimeUnit.
+
+Autre problème, je n’ai pas de seuil de difficulté, c’est assez embêtant. Par manque de temps, je n’ai pas pu faire de difficulté croissante. Le hasard des mes plateau rend mon jeu infini, mais pas forcement gagnable, ce qui est assez délicat.
+
+Faire quelque chose de plus jolie visuellement est aussi envisageable, mais swing n’est pas très intuitif, c’est difficile de faire quelque chose qui ressemble à ce qu’on a en tête.
+
+J’ai encore quelques simplification de code à faire. Il y a quelque partie du code dont je sais pas très optimisé.
