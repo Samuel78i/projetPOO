@@ -91,6 +91,20 @@ public class View extends JFrame {
 
     public void launchMenu() {
         panel.removeAll();
+        GridBagLayout layout = new GridBagLayout();
+        panel.setLayout(layout);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 100;
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 1;
+
         JButton play = new JButton("Play");
         JButton rules = new JButton("Rules");
         JButton quit = new JButton("Quit");
@@ -213,13 +227,17 @@ public class View extends JFrame {
 
     public void launchRules(){
         panel.removeAll();
-        JLabel jl = new JLabel("Pour detruire une Case il faut cliquer sur une case qui est collé a une case de la même couleur."
-                + "\n" + "Il y a 2 mode de jeu, si des animaux sont présent , il faut les faire tomber"
-                + "\n" +" Sinon il faut tout détruire !");
+        panel.setLayout(new GridLayout(4, 0));
+        JLabel j1 = new JLabel("Pour detruire une Case il faut cliquer sur une case qui est collé a une case de la même couleur.");
+        JLabel j2 = new JLabel("Il y a 2 mode de jeu, si des animaux sont présent , il faut les faire tomber");
+        JLabel j3 = new JLabel("Sinon il faut tout détruire !");
+
         JButton back = new JButton("BACK");
         back.addActionListener((event) -> controller.menu());
 
-        panel.add(jl);
+        panel.add(j1);
+        panel.add(j2);
+        panel.add(j3);
         panel.add(back);
         panel.revalidate();
         this.repaint();
